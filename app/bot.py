@@ -2,7 +2,7 @@ from telegram import Update
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, ContextTypes, CommandHandler
 from .translator import Translator
 
-ru_en_ranslator = Translator('ru', 'en')
+ru_en_translator = Translator('ru', 'en')
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(
@@ -11,7 +11,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    translated_text = ru_en_ranslator.translate(update.message.text)
+    translated_text = ru_en_translator.translate(update.message.text)
     await context.bot.send_message(chat_id=update.effective_chat.id, text=translated_text)
 
 def run(telegram_bot_token: str) -> None:
