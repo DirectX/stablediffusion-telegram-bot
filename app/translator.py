@@ -2,7 +2,7 @@ import argostranslate.package, argostranslate.translate
 
 class Translator:
     def __init__(self, from_code: str, to_code: str) -> None:
-        print('Initializing translator...')
+        print(f'Initializing {from_code}-{to_code} translator...')
 
         argostranslate.package.update_package_index()
 
