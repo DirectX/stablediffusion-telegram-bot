@@ -5,7 +5,7 @@ setup(
     version='1.0',
     description='Telegram bot for Stable Diffusion neural network',
     author='DirectX',
-    packages=['bot'],
+    packages=['app'],
     install_requires=['argostranslate', 'python-dotenv', 'python-telegram-bot'],
     project_urls={
         "Source Code": "https://github.com/DirectX/stablediffusion-telegram-bot"
