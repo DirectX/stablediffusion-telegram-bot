@@ -7,7 +7,7 @@ ru_en_ranslator = Translator('ru', 'en')
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(
         chat_id = update.effective_chat.id,
-        text="Бот для генерации изображений нейросети Stable Diffusion"
+        text="Бот для генерации изображений нейросетью Stable Diffusion"
     )
 
 async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
