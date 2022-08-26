@@ -4,7 +4,7 @@
 
 ```bash
 pip install .
-echo "TELEGRAM_BOT_TOKEN=..." > .env
+printf "TELEGRAM_BOT_TOKEN=...\nSTABLE_DIFFUSION_PATH=..." > .env
 ```
 
 ## Running
