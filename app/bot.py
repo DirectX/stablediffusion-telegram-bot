@@ -13,7 +13,7 @@ def run(telegram_bot_token: str, stable_diffusion: StableDiffusion) -> None:
     async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id = update.effective_chat.id,
-            text="Бот для генерации изображений нейросетью Stable Diffusion"
+            text="Бот для генерации изображений нейросетью Stable Diffusion\n\nНапишите фразу на русском или английском языке и бот сгенерирует изображение, используя нейросеть Stable Diffusion"
         )
 
     async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
