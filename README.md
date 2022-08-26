@@ -1,5 +1,7 @@
 # Telegram bot for Stable Diffusion neural network
 
+![Telegram bot](img/screenshot.png)
+
 ## Prerequisites
 
 * CUDA-compatible graphics card
@@ -24,4 +26,5 @@ python main.py
 ## References
 
 * [Stable Diffusion project](https://github.com/CompVis/stable-diffusion)
+* [Argos Translate](https://github.com/argosopentech/argos-translate)
 * [Python Telegram Bot](https://github.com/python-telegram-bot/python-telegram-bot)
