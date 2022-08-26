@@ -13,7 +13,7 @@ printf "TELEGRAM_BOT_TOKEN=...\nSTABLE_DIFFUSION_PATH=..." > .env
 python3 main.py
 ```
 
-## Refeerences
+## References
 
 * [Stable Diffusion project](https://github.com/CompVis/stable-diffusion)
 * [Python Telegram Bot](https://github.com/python-telegram-bot/python-telegram-bot)
