@@ -2,6 +2,8 @@ from this import s
 from types import SimpleNamespace
 import os
 import cv2
+import time
+import datetime
 import torch
 import numpy as np
 from omegaconf import OmegaConf
@@ -90,14 +92,16 @@ class StableDiffusion:
                 x_checked_image[i] = self.load_replacement(x_checked_image[i])
         return x_checked_image, has_nsfw_concept
 
-    def text2img(self, text: str, count: int = 1) -> None:
+    def text2img(self, text: str, uid: int, username: str, count: int = 1) -> None:
+        ts = int(time.time())
+        date_time = datetime.datetime.fromtimestamp(ts)
+        dt_string = date_time.strftime("%D/%m/%Y %H:%M:%S")
+
         opt = SimpleNamespace(**{
-            # 'prompt': 'a painting of a ' + text, # the prompt to render
+            # 'prompt': 'a photo of a ' + text, # the prompt to render
             # 'prompt': 'a painting of a ' + text, # the prompt to render
             'prompt': text,          # the prompt to render
-            'outdir': os.path.join(self.stable_diffusion_path, 'outputs/txt2img-samples'), # dir to write results to
-            'skip_grid': True,       # do not save a grid, only individual samples. Helpful when evaluating lots of samples
-            'skip_save': False,      # do not save individual samples. For speed measurement
+            'outdir': f'output/{uid}', # dir to write results to
             'ddim_steps': 50,        # number of ddim sampling steps
             'plms': True,            # use plms sampling
             'laion400m': False,      # uses the LAION400M model
@@ -159,10 +163,8 @@ class StableDiffusion:
                 data = f.read().splitlines()
                 data = list(self.chunk(data, batch_size))
 
-        sample_path = os.path.join(outpath, "samples")
-        os.makedirs(sample_path, exist_ok=True)
-        base_count = len(os.listdir(sample_path))
-        grid_count = len(os.listdir(outpath)) - 1
+        images_path = os.path.join(outpath, "images")
+        os.makedirs(images_path, exist_ok=True)
 
         start_code = None
         if opt.fixed_code:
@@ -201,32 +203,30 @@ class StableDiffusion:
                             x_checked_image, has_nsfw_concept = self.check_safety(x_samples_ddim)
                             x_checked_image_torch = torch.from_numpy(x_checked_image).permute(0, 3, 1, 2)
 
-                            if not opt.skip_save:
-                                for x_sample in x_checked_image_torch:
-                                    x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
-                                    img = Image.fromarray(x_sample.astype(np.uint8))
-                                    img = self.put_watermark(img, wm_encoder)
-                                    filename = f"{base_count:08}.png"
-                                    filepath = os.path.join(sample_path, filename)
-                                    img.save(filepath)
-                                    filepaths.append(filepath)
-                                    base_count += 1
+                            for x_sample in x_checked_image_torch:
+                                x_sample = 255. * rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
+                                img = Image.fromarray(x_sample.astype(np.uint8))
+                                img = self.put_watermark(img, wm_encoder)
+                                image_filename = f'{ts}.png'
+                                image_filepath = os.path.join(images_path, image_filename)
+                                img.save(image_filepath)
+                                filepaths.append(image_filepath)
+                                query_filename = f'queries.md'
+                                query_filepath = os.path.join(outpath, query_filename)
+                                query_file_exists = os.path.isfile(query_filepath)
+                                with open(query_filepath, "a+") as query_file:
+                                    if not query_file_exists:
+                                        query_file.writelines([
+                                            f'# [{username}](https://t.me/{username}) ({uid})\n\n',
+                                        ])
+                                    query_file.writelines([
+                                        f'## {text}\n\n',
+                                        f'![text](images/{ts}.png)\n\n',
+                                        f'{dt_string}\n\n',
+                                        '---\n\n',
+                                    ])
 
-                            if not opt.skip_grid:
-                                all_samples.append(x_checked_image_torch)
-
-                    if not opt.skip_grid:
-                        # additionally, save as grid
-                        grid = torch.stack(all_samples, 0)
-                        grid = rearrange(grid, 'n b c h w -> (n b) c h w')
-                        grid = make_grid(grid, nrow=n_rows)
-
-                        # to image
-                        grid = 255. * rearrange(grid, 'c h w -> h w c').cpu().numpy()
-                        img = Image.fromarray(grid.astype(np.uint8))
-                        img = self.put_watermark(img, wm_encoder)
-                        img.save(os.path.join(outpath, f'grid-{grid_count:04}.png'))
-                        grid_count += 1
+                            all_samples.append(x_checked_image_torch)
 
                     toc = time.time()
 
