@@ -19,8 +19,8 @@ def run(telegram_bot_token: str, stable_diffusion: StableDiffusion) -> None:
 
     async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE):
         translated_text = ru_en_translator.translate(update.message.text)
-        username = f'@{update.effective_user.username}'
-        if username == '@':
+        username = f'{update.effective_user.username}'
+        if username == '':
             username = 'Anonymous'
         filepaths = stable_diffusion.text2img(translated_text, update.effective_chat.id, username)
         
